@@ -1,0 +1,22 @@
+language: ruby
+cache: bundler
+rvm:
+- 2.2.0
+branches:
+  only:
+  - master
+ssh_known_hosts:
+- deploy-jgoncalv.rhcloud.com
+before_install:
+- openssl aes-256-cbc -K $encrypted_14571849b2f2_key -iv $encrypted_14571849b2f2_iv
+  -in id_rsa_deploy.enc -out id_rsa_deploy -d
+- chmod 600 id_rsa_deploy
+- eval "$(ssh-agent -s)"
+- ssh-add id_rsa_deploy
+before_script:
+- echo -e "Host deploy-jgoncalv.rhcloud.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+script:
+- git config --global user.email "openshift@redhat.com"
+- git config --global user.name "Joao Goncalves"
+- git remote add production ssh://56d5a3c22d52712705000216@deploy-jgoncalv.rhcloud.com/~/git/deploy.git/
+- bundle exec middleman deploy
